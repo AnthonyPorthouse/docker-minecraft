@@ -15,9 +15,6 @@ jobs:
       IMAGE_NAME: ghcr.io/${{ github.repository }}/minecraft
     steps:
       - uses: actions/checkout@v3
-      - uses: docker/setup-buildx-action@v2
-        with:
-          install: true
       - uses: docker/login-action@v2
         with:
           registry: ghcr.io
@@ -32,9 +29,6 @@ jobs:
       IMAGE_NAME: ghcr.io/${{ github.repository }}/paper
     steps:
       - uses: actions/checkout@v3
-      - uses: docker/setup-buildx-action@v2
-        with:
-          install: true
       - uses: docker/login-action@v2
         with:
           registry: ghcr.io
@@ -49,9 +43,6 @@ jobs:
       IMAGE_NAME: ghcr.io/${{ github.repository }}/velocity
     steps:
       - uses: actions/checkout@v3
-      - uses: docker/setup-buildx-action@v2
-        with:
-          install: true
       - uses: docker/login-action@v2
         with:
           registry: ghcr.io
