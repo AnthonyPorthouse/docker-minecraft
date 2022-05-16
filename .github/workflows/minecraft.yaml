@@ -59,4 +59,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build
         run: |
-          ./build-veclocity.sh
+          ./build-velocity.sh
