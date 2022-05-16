@@ -7,6 +7,9 @@ if ! command -v jq >/dev/null 2>&1; then
     exit 1
 fi
 
+IMAGE_NAME=${IMAGE_NAME:-port3m5/paper}
+IMAGE_NAME=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
+
 # Build Paper
 versions=$(curl -s 'https://papermc.io/api/v2/projects/paper' | jq -r ".version_groups[]")
 
@@ -16,7 +19,7 @@ for version in $versions; do
     version=$(jq -r '.version' <<< "$build")
     build_id=$(jq -r '.build' <<< "$build")
 
-    if docker image inspect "port3m5/paper:${version}-${build_id}" > /dev/null 2>&1; then
+    if docker image inspect "$IMAGE_NAME:${version}-${build_id}" > /dev/null 2>&1; then
         echo "Build of Paper $version build $build_id already exists, skipping"
         continue
     fi
@@ -26,14 +29,14 @@ for version in $versions; do
     docker build \
         --build-arg MINECRAFT_VERSION="$version" \
         --build-arg=BUILD_NUMBER="$build_id" \
-        -t "port3m5/paper" \
-        -t "port3m5/paper:${version}" \
-        -t "port3m5/paper:${version}-${build_id}" \
+        -t "$IMAGE_NAME" \
+        -t "$IMAGE_NAME:${version}" \
+        -t "$IMAGE_NAME:${version}-${build_id}" \
         paper
 
-    docker push "port3m5/paper:${version}"
-    docker push "port3m5/paper:${version}-${build_id}"
+    docker push "$IMAGE_NAME:${version}"
+    docker push "$IMAGE_NAME:${version}-${build_id}"
 done
 
 # Last build is latest
-docker push "port3m5/paper"
+docker push "$IMAGE_NAME"
