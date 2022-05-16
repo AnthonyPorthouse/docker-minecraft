@@ -12,7 +12,7 @@ jobs:
   build-vanilla:
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ${{ github.repository }}/minecraft
+      IMAGE_NAME: ghcr.io/${{ github.repository }}/minecraft
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-buildx-action@v2
@@ -29,7 +29,7 @@ jobs:
   build-paper:
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ${{ github.repository }}/paper
+      IMAGE_NAME: ghcr.io/${{ github.repository }}/paper
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-buildx-action@v2
@@ -46,7 +46,7 @@ jobs:
   build-velocity:
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ${{ github.repository }}/velocity
+      IMAGE_NAME: ghcr.io/${{ github.repository }}/velocity
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-buildx-action@v2
