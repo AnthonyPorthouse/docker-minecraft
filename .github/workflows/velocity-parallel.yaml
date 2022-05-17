@@ -1,0 +1,44 @@
+name: velocity-parallel
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  get-versions:
+    name: Get Velocity Releases
+    runs-on: ubuntu-latest
+    outputs:
+      latest: ${{ steps.versions.outputs.latest }}
+      versions: ${{ steps.versions.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get Velocity Releases
+        id: versions
+        run: ./velocity/build/get-versions.sh
+
+  build-velocity:
+    name: Build Velocity ${{ matrix.version }}
+    needs: get-versions
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ${{ fromJSON(needs.get-versions.outputs.versions) }}
+    permissions:
+      packages: write
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository }}/velocity
+      LATEST_VERSION: ${{ needs.get-versions.outputs.latest }}
+      VERSION: ${{ matrix.version }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build
+        run: ./velocity/build/build-version.sh
