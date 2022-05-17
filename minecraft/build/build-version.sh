@@ -6,7 +6,7 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 latest="${LATEST_VERSION:-}"
-version="${version:-}"
+version="${VERSION:-}"
 
 IMAGE_NAME=${IMAGE_NAME:-port3m5/minecraft}
 IMAGE_NAME=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
