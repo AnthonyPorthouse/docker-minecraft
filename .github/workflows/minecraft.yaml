@@ -11,6 +11,8 @@ env:
 jobs:
   build-vanilla:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     env:
       IMAGE_NAME: ghcr.io/${{ github.repository }}/minecraft
     steps:
@@ -25,6 +27,8 @@ jobs:
           ./build-minecraft.sh
   build-paper:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     env:
       IMAGE_NAME: ghcr.io/${{ github.repository }}/paper
     steps:
@@ -39,6 +43,8 @@ jobs:
           ./build-paper.sh
   build-velocity:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     env:
       IMAGE_NAME: ghcr.io/${{ github.repository }}/velocity
     steps:
