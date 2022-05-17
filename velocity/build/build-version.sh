@@ -24,7 +24,7 @@ docker build \
     -t "$IMAGE_NAME" \
     -t "$IMAGE_NAME:${velocity_version}" \
     -t "$IMAGE_NAME:${velocity_version}-${build_id}" \
-    paper
+    velocity
 
 docker push "$IMAGE_NAME"
 docker push "$IMAGE_NAME:${velocity_version}"
