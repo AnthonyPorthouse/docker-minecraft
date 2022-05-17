@@ -28,6 +28,8 @@ if [ "$server_url" == "null" ]; then
     exit 0
 fi
 
+set -x
+
 docker build \
     --build-arg MINECRAFT_VERSION="$minecraft_version" \
     --build-arg SERVER_URL="$server_url" \
