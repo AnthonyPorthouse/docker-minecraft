@@ -18,6 +18,12 @@ jobs:
         id: versions
         run: ./minecraft/build/get-minecraft-versions.sh
 
+  debug-output:
+    needs: get-versions
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ needs.get-versions.outputs.latest }}
+      - run: echo ${{ needs.get-versions.outputs.versions }}
 
   build-vanilla:
     needs: get-versions
