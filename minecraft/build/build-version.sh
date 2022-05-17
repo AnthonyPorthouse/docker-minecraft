@@ -8,6 +8,9 @@ fi
 latest="${LATEST_VERSION:-}"
 version="${version:-}"
 
+IMAGE_NAME=${IMAGE_NAME:-port3m5/minecraft}
+IMAGE_NAME=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
+
 minecraft_version=$(jq -r '.id' <<< "$version")
 
 url=$(jq -r '.url' <<< "$version")
