@@ -8,6 +8,7 @@ env:
 
 jobs:
   get-versions:
+    name: Get Minecraft Releases
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ steps.versions.outputs.latest }}
@@ -18,14 +19,8 @@ jobs:
         id: versions
         run: ./minecraft/build/get-minecraft-versions.sh
 
-  debug-output:
-    needs: get-versions
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo ${{ needs.get-versions.outputs.latest }}
-      - run: echo ${{ needs.get-versions.outputs.versions }}
-
   build-vanilla:
+    name: Build Minecraft ${{ matrix.version.id }}
     needs: get-versions
     runs-on: ubuntu-latest
     strategy:
