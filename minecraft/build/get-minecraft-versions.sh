@@ -11,7 +11,7 @@ IMAGE_NAME=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
 manifest=$(curl -s 'https://launchermeta.mojang.com/mc/game/version_manifest.json')
 
 latest_version=$(jq -r '.latest.release' <<< "$manifest")
-versions=$(jq '[.versions[] | select( .type == "release" )]' <<< "$manifest")
+versions=$(jq -c '[.versions[] | select( .type == "release" )]' <<< "$manifest")
 
 echo "::set-output name=latest::$latest_version"
 echo "::set-output name=versions::$versions"
