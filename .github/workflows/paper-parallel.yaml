@@ -1,4 +1,4 @@
-name: minecraft-parallel
+name: paper-parallel
 on:
   workflow_dispatch:
   schedule:
@@ -9,19 +9,19 @@ env:
 
 jobs:
   get-versions:
-    name: Get Minecraft Releases
+    name: Get Paper Releases
     runs-on: ubuntu-latest
     outputs:
       latest: ${{ steps.versions.outputs.latest }}
       versions: ${{ steps.versions.outputs.versions }}
     steps:
       - uses: actions/checkout@v3
-      - name: Get Minecraft Releases
+      - name: Get Paper Releases
         id: versions
-        run: ./minecraft/build/get-minecraft-versions.sh
+        run: ./paper/build/get-versions.sh
 
-  build-vanilla:
-    name: Build Minecraft ${{ matrix.version.id }}
+  build-paper:
+    name: Build Paper ${{ matrix.version }}
     needs: get-versions
     runs-on: ubuntu-latest
     strategy:
@@ -30,7 +30,7 @@ jobs:
     permissions:
       packages: write
     env:
-      IMAGE_NAME: ghcr.io/${{ github.repository }}/minecraft
+      IMAGE_NAME: ghcr.io/${{ github.repository }}/paper
       LATEST_VERSION: ${{ needs.get-versions.outputs.latest }}
       VERSION: ${{ toJSON(matrix.version) }}
     steps:
@@ -41,4 +41,4 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build
-        run: ./minecraft/build/build-version.sh
+        run: ./paper/build/build-version.sh
