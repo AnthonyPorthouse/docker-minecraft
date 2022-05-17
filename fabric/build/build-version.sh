@@ -19,7 +19,7 @@ docker build \
     --build-arg FABRIC_VERSION="$fabric_version" \
     -t "$IMAGE_NAME" \
     -t "$IMAGE_NAME:${fabric_version}" \
-    paper
+    fabric
 
 docker push "$IMAGE_NAME:${fabric_version}"
 
