@@ -5,10 +5,10 @@ if ! command -v jq >/dev/null 2>&1; then
     exit 1
 fi
 
-manifest=$(curl -s 'https://launchermeta.mojang.com/mc/game/version_manifest.json')
+manifest=$(curl -s 'https://papermc.io/api/v2/projects/paper')
 
-latest_version=$(jq -r '.latest.release' <<< "$manifest")
-versions=$(jq -c '[.versions[] | select( .type == "release" )]' <<< "$manifest")
+versions=$(jq -c '.version_groups' <<< "$manifest")
+latest_version=$(jq -r '.version_groups[-1]' <<< "$manifest")
 
 echo "::set-output name=latest::$latest_version"
 echo "::set-output name=versions::$versions"
