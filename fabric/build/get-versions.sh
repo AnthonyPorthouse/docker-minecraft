@@ -7,8 +7,8 @@ fi
 
 manifest=$(curl -s 'https://maven.fabricmc.net/net/fabricmc/fabric-installer/maven-metadata.xml')
 
-latest_version=$(jq -r '.latest.release' <<< "$manifest")
-versions=$(jq -c '[.versions[] | select( .type == "release" )]' <<< "$manifest")
+latest_version=0.10.2
+versions='["0.10.0", "0.10.1", "0.10.2"]'
 
 echo "::set-output name=latest::$latest_version"
 echo "::set-output name=versions::$versions"
