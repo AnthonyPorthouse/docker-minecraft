@@ -1,7 +1,7 @@
 # Docker Minecraft
 
 [![Minecraft](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/minecraft-parallel.yaml/badge.svg)](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/minecraft-parallel.yaml)
-[![Fabric(https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/fabric-parallel.yaml/badge.svg)](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/fabric-parallel.yaml)
+[![Fabric](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/fabric-parallel.yaml/badge.svg)](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/fabric-parallel.yaml)
 [![Paper](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/paper-parallel.yaml/badge.svg)](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/paper-parallel.yaml)
 [![Purpur](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/purpur-parallel.yaml/badge.svg)](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/purpur-parallel.yaml)
 [![Velocity](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/velocity-parallel.yaml/badge.svg)](https://github.com/AnthonyPorthouse/docker-minecraft/actions/workflows/velocity-parallel.yaml)

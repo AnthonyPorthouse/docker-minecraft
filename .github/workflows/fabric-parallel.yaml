@@ -1,4 +1,4 @@
-name: fabric-parallel
+name: Fabric
 on:
   workflow_dispatch:
   schedule:
