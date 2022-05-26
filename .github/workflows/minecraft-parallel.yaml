@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Get Minecraft Snapshot Releases
         id: snapshot
-        run: ./minecraft/build/get-minecraft-versions.sh
+        run: ./minecraft/build/get-minecraft-snapshot.sh
 
   build-snapshot:
     name: Build Minecraft Snapshot ${{ matrix.version.id }}
