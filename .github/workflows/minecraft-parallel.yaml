@@ -42,3 +42,38 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build
         run: ./minecraft/build/build-version.sh
+
+  get-snapshot-versions:
+    name: Get Minecraft Snapshot Releases
+    runs-on: ubuntu-latest
+    outputs:
+      latest: ${{ steps.versions.outputs.latest }}
+      versions: ${{ steps.versions.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get Minecraft Snapshot Releases
+        id: snapshot
+        run: ./minecraft/build/get-minecraft-versions.sh
+
+  build-snapshot:
+    name: Build Minecraft Snapshot ${{ matrix.version.id }}
+    needs: get-snapshot-versions
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ${{ fromJSON(needs.get-snapshot-versions.outputs.versions) }}
+    permissions:
+      packages: write
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository }}/minecraft
+      LATEST_VERSION: ${{ needs.get-snapshot-versions.outputs.latest }}
+      VERSION: ${{ toJSON(matrix.version) }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build
+        run: ./minecraft/build/build-snapshot.sh
