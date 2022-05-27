@@ -7,10 +7,6 @@ fi
 
 version="${VERSION:-}"
 
-IMAGE_NAME=${IMAGE_NAME:-port3m5/minecraft}
-IMAGE_NAME=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
-echo "IMAGE_NAME=$IMAGE_NAME" >> "$GITHUB_ENV"
-
 minecraft_version=$(jq -r '.id' <<< "$version")
 
 url=$(jq -r '.url' <<< "$version")

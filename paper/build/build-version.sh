@@ -8,9 +8,6 @@ fi
 latest="${LATEST_VERSION:-}"
 version="${VERSION:-}"
 
-IMAGE_NAME=${IMAGE_NAME:-port3m5/paper}
-IMAGE_NAME=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
-
 build=$(curl -s "https://papermc.io/api/v2/projects/paper/version_group/${version}/builds" | jq .builds[-1])
 
 minecraft_version=$(jq -r '.version' <<< "$build")

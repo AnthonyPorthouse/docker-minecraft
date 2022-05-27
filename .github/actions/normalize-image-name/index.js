@@ -3,7 +3,12 @@ const github = require('@actions/github')
 
 try {
     const imageName = core.getInput('image-name');
-    core.setOutput('image-name', imageName.toLowerCase());
+
+    const newName = imageName.toLowerCase();
+
+    console.log(`Normalized image name ${imageName} as ${newName}`);
+
+    core.setOutput('image-name', newName);
 } catch (error) {
     core.setFailed(error.message);
 }

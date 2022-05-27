@@ -8,9 +8,6 @@ fi
 latest="${LATEST_VERSION:-}"
 version="${VERSION:-}"
 
-IMAGE_NAME=${IMAGE_NAME:-port3m5/fabric}
-IMAGE_NAME=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
-
 fabric_version="$version"
 
 echo "Building Fabric $fabric_version"
