@@ -70,7 +70,7 @@ runs:
     - name: Push Latest
       uses: docker/build-push-action@v3
       if: |
-        inputs.push == true
+        inputs.push == 'true'
         && inputs.version == inputs.latest-version
       with:
         context: minecraft
@@ -82,7 +82,7 @@ runs:
     - name: Push
       uses: docker/build-push-action@v3
       if: |
-        inputs.push == true
+        inputs.push == 'true'
         && inputs.version != inputs.latest-version
       with:
         context: minecraft
