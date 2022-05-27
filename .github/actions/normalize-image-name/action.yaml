@@ -1,0 +1,12 @@
+name: Normalize Image Name
+description: Standardise the format of image names to all lowercase
+inputs:
+  image-name:
+    description: The raw name of the Image
+    required: true
+outputs:
+  image-name:
+    description: The formatted image name
+runs:
+  using: node16
+  main: index.js

@@ -44,6 +44,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: .github/actions/normalize-image-name
+        id: normalize-image-name
+        with:
+          image-name: ${{ env.IMAGE_NAME }}
+      - name: Update Image Name
+        run: echo "IMAGE_NAME=${{ steps.normalize-image-name.outputs.image-name }}" >> "$GITHUB_ENV"
+
       - name: Get Build Info
         id: build-info
         run: ./minecraft/build/build-version.sh
