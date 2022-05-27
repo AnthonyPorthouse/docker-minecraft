@@ -5,7 +5,6 @@ if ! command -v jq >/dev/null 2>&1; then
     exit 1
 fi
 
-latest="${LATEST_VERSION:-}"
 version="${VERSION:-}"
 
 IMAGE_NAME=${IMAGE_NAME:-port3m5/minecraft}
@@ -28,24 +27,6 @@ if [ "$server_url" == "null" ]; then
     exit 0
 fi
 
-set -x
-
-docker build \
-    --build-arg MINECRAFT_VERSION="$minecraft_version" \
-    --build-arg SERVER_URL="$server_url" \
-    --build-arg JAVA_IMAGE="eclipse-temurin:$java_version-alpine" \
-    -t "$IMAGE_NAME:${minecraft_version}" \
-    minecraft
-
-docker push "$IMAGE_NAME:${minecraft_version}"
-
-if [ "$minecraft_version" == "$latest" ]; then
-    docker build \
-        --build-arg MINECRAFT_VERSION="$minecraft_version" \
-        --build-arg SERVER_URL="$server_url" \
-        --build-arg JAVA_IMAGE="eclipse-temurin:$java_version-alpine" \
-        -t "$IMAGE_NAME" \
-        minecraft
-
-    docker push "$IMAGE_NAME"
-fi
+echo "::set-output name=minecraft_version::$minecraft_version"
+echo "::set-output name=server_url::$server_url"
+echo "::set-output name=java_version::$java_version"
