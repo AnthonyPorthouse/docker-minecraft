@@ -42,12 +42,6 @@ jobs:
       VERSION: ${{ toJSON(matrix.version) }}
     steps:
       - uses: actions/checkout@v3
-      - uses: docker/setup-buildx-action@v2
-      - uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       # Normalize our Image name and Update our ENV
       - name: Normalize Image Name
@@ -63,66 +57,80 @@ jobs:
         run: ./minecraft/build/build-version.sh
 
       - name: Build Latest
-        uses: docker/build-push-action@v3
-        if: |
-          steps.build-info.outputs.minecraft_version == env.LATEST_VERSION
-          && steps.build-info.outputs.server_url != null
+        uses: ./.github/actions/build-and-deploy
+        if: steps.build-info.outputs.server_url != null
         with:
           context: minecraft
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ steps.build-info.outputs.minecraft_version }}
+          image-name: ${{ env.IMAGE_NAME }}
+          version: steps.build-info.outputs.minecraft_version
+          latest-version: env.LATEST_VERSION
+          push: ${{ github.ref == 'refs/heads/main' }}
           build-args: |
             MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
             SERVER_URL=${{ steps.build-info.outputs.server_url }}
             JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
 
-      - name: Build
-        uses: docker/build-push-action@v3
-        if: |
-          steps.build-info.outputs.minecraft_version != env.LATEST_VERSION
-          && steps.build-info.outputs.server_url != null
-        with:
-          context: minecraft
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ steps.build-info.outputs.minecraft_version }}
-          build-args: |
-            MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
-            SERVER_URL=${{ steps.build-info.outputs.server_url }}
-            JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
+      # - name: Build Latest
+      #   uses: docker/build-push-action@v3
+      #   if: |
+      #     steps.build-info.outputs.minecraft_version == env.LATEST_VERSION
+      #     && steps.build-info.outputs.server_url != null
+      #   with:
+      #     context: minecraft
+      #     tags: |
+      #       ${{ env.IMAGE_NAME }}:latest
+      #       ${{ env.IMAGE_NAME }}:${{ steps.build-info.outputs.minecraft_version }}
+      #     build-args: |
+      #       MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
+      #       SERVER_URL=${{ steps.build-info.outputs.server_url }}
+      #       JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
 
-      - name: Push Latest
-        uses: docker/build-push-action@v3
-        if: |
-          github.ref == 'refs/heads/main'
-          && steps.build-info.outputs.minecraft_version == env.LATEST_VERSION
-          && steps.build-info.outputs.server_url != null
-        with:
-          context: minecraft
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ steps.build-info.outputs.minecraft_version }}
-          build-args: |
-            MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
-            SERVER_URL=${{ steps.build-info.outputs.server_url }}
-            JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
+      # - name: Build
+      #   uses: docker/build-push-action@v3
+      #   if: |
+      #     steps.build-info.outputs.minecraft_version != env.LATEST_VERSION
+      #     && steps.build-info.outputs.server_url != null
+      #   with:
+      #     context: minecraft
+      #     tags: |
+      #       ${{ env.IMAGE_NAME }}:${{ steps.build-info.outputs.minecraft_version }}
+      #     build-args: |
+      #       MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
+      #       SERVER_URL=${{ steps.build-info.outputs.server_url }}
+      #       JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
 
-      - name: Push
-        uses: docker/build-push-action@v3
-        if: |
-          github.ref == 'refs/heads/main'
-          && steps.build-info.outputs.minecraft_version != env.LATEST_VERSION
-          && steps.build-info.outputs.server_url != null
-        with:
-          context: minecraft
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ steps.build-info.outputs.minecraft_version }}
-          build-args: |
-            MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
-            SERVER_URL=${{ steps.build-info.outputs.server_url }}
-            JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
+      # - name: Push Latest
+      #   uses: docker/build-push-action@v3
+      #   if: |
+      #     github.ref == 'refs/heads/main'
+      #     && steps.build-info.outputs.minecraft_version == env.LATEST_VERSION
+      #     && steps.build-info.outputs.server_url != null
+      #   with:
+      #     context: minecraft
+      #     push: true
+      #     tags: |
+      #       ${{ env.IMAGE_NAME }}:latest
+      #       ${{ env.IMAGE_NAME }}:${{ steps.build-info.outputs.minecraft_version }}
+      #     build-args: |
+      #       MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
+      #       SERVER_URL=${{ steps.build-info.outputs.server_url }}
+      #       JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
+
+      # - name: Push
+      #   uses: docker/build-push-action@v3
+      #   if: |
+      #     github.ref == 'refs/heads/main'
+      #     && steps.build-info.outputs.minecraft_version != env.LATEST_VERSION
+      #     && steps.build-info.outputs.server_url != null
+      #   with:
+      #     context: minecraft
+      #     push: true
+      #     tags: |
+      #       ${{ env.IMAGE_NAME }}:${{ steps.build-info.outputs.minecraft_version }}
+      #     build-args: |
+      #       MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
+      #       SERVER_URL=${{ steps.build-info.outputs.server_url }}
+      #       JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
 
   get-snapshot-versions:
     name: Get Minecraft Snapshot Releases
@@ -151,12 +159,6 @@ jobs:
       VERSION: ${{ toJSON(matrix.version) }}
     steps:
       - uses: actions/checkout@v3
-      - uses: docker/setup-buildx-action@v2
-      - uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       # Normalize our Image name and Update our ENV
       - name: Normalize Image Name
@@ -172,63 +174,78 @@ jobs:
         run: ./minecraft/build/build-snapshot.sh
 
       - name: Build Latest
-        uses: docker/build-push-action@v3
-        if: |
-          steps.snapshot-build-info.outputs.minecraft_version == env.LATEST_VERSION
-          && steps.snapshot-build-info.outputs.server_url != null
+        uses: ./.github/actions/build-and-deploy
+        if: steps.snapshot-build-info.outputs.server_url != null
         with:
           context: minecraft
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest-snapshot
-            ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
+          image-name: ${{ env.IMAGE_NAME }}
+          version: steps.snapshot-build-info.outputs.minecraft_version
+          latest-version: env.LATEST_VERSION
+          push: ${{ github.ref == 'refs/heads/main' }}
           build-args: |
             MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
             SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
             JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
 
-      - name: Build
-        uses: docker/build-push-action@v3
-        if: |
-          steps.snapshot-build-info.outputs.minecraft_version != env.LATEST_VERSION
-          && steps.snapshot-build-info.outputs.server_url != null
-        with:
-          context: minecraft
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
-          build-args: |
-            MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
-            SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
-            JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
 
-      - name: Push Latest
-        uses: docker/build-push-action@v3
-        if: |
-          github.ref == 'refs/heads/main'
-          && steps.snapshot-build-info.outputs.minecraft_version == env.LATEST_VERSION
-          && steps.snapshot-build-info.outputs.server_url != null
-        with:
-          context: minecraft
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest-snapshot
-            ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
-          build-args: |
-            MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
-            SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
-            JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
+      # - name: Build Latest
+      #   uses: docker/build-push-action@v3
+      #   if: |
+      #     steps.snapshot-build-info.outputs.minecraft_version == env.LATEST_VERSION
+      #     && steps.snapshot-build-info.outputs.server_url != null
+      #   with:
+      #     context: minecraft
+      #     tags: |
+      #       ${{ env.IMAGE_NAME }}:latest-snapshot
+      #       ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
+      #     build-args: |
+      #       MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
+      #       SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
+      #       JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
 
-      - name: Push
-        uses: docker/build-push-action@v3
-        if: |
-          github.ref == 'refs/heads/main'
-          && steps.snapshot-build-info.outputs.minecraft_version != env.LATEST_VERSION
-          && steps.snapshot-build-info.outputs.server_url != null
-        with:
-          context: minecraft
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
-          build-args: |
-            MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
-            SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
-            JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
+      # - name: Build
+      #   uses: docker/build-push-action@v3
+      #   if: |
+      #     steps.snapshot-build-info.outputs.minecraft_version != env.LATEST_VERSION
+      #     && steps.snapshot-build-info.outputs.server_url != null
+      #   with:
+      #     context: minecraft
+      #     tags: |
+      #       ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
+      #     build-args: |
+      #       MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
+      #       SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
+      #       JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
+
+      # - name: Push Latest
+      #   uses: docker/build-push-action@v3
+      #   if: |
+      #     github.ref == 'refs/heads/main'
+      #     && steps.snapshot-build-info.outputs.minecraft_version == env.LATEST_VERSION
+      #     && steps.snapshot-build-info.outputs.server_url != null
+      #   with:
+      #     context: minecraft
+      #     push: true
+      #     tags: |
+      #       ${{ env.IMAGE_NAME }}:latest-snapshot
+      #       ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
+      #     build-args: |
+      #       MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
+      #       SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
+      #       JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
+
+      # - name: Push
+      #   uses: docker/build-push-action@v3
+      #   if: |
+      #     github.ref == 'refs/heads/main'
+      #     && steps.snapshot-build-info.outputs.minecraft_version != env.LATEST_VERSION
+      #     && steps.snapshot-build-info.outputs.server_url != null
+      #   with:
+      #     context: minecraft
+      #     push: true
+      #     tags: |
+      #       ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
+      #     build-args: |
+      #       MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
+      #       SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
+      #       JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
