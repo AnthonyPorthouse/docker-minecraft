@@ -3,6 +3,14 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 6 * * *'
+  pull_request:
+    paths:
+      - .github/actions
+      - .github/workflows/fabric-parallel.yaml
+      - fabric
+  push:
+    branches:
+      - main
 
 env:
   REGISTRY: ghcr.io
@@ -35,10 +43,67 @@ jobs:
       VERSION: ${{ matrix.version }}
     steps:
       - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-action@v2
       - uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      # Normalize our Image name and Update our ENV
+      - name: Normalize Image Name
+        uses: ./.github/actions/normalize-image-name
+        id: normalize-image-name
+        with:
+          image-name: ${{ env.IMAGE_NAME }}
+      - name: Update Image Name
+        run: echo "IMAGE_NAME=${{ steps.normalize-image-name.outputs.image-name }}" >> "$GITHUB_ENV"
+
+      - name: Build Latest
+        uses: docker/build-push-action@v3
+        if: |
+          env.VERSION == env.LATEST_VERSION
+        with:
+          context: fabric
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          build-args: |
+            FABRIC_VERSION=${{ env.VERSION }}
+
       - name: Build
-        run: ./fabric/build/build-version.sh
+        uses: docker/build-push-action@v3
+        if: |
+          env.VERSION != env.LATEST_VERSION
+        with:
+          context: fabric
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          build-args: |
+            FABRIC_VERSION=${{ env.VERSION }}
+
+      - name: Push Latest
+        uses: docker/build-push-action@v3
+        if: |
+          github.ref == 'refs/heads/main'
+          && env.VERSION == env.LATEST_VERSION
+        with:
+          context: minecraft
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          build-args: |
+            FABRIC_VERSION=${{ env.VERSION }}
+
+      - name: Push
+        uses: docker/build-push-action@v3
+        if: |
+          github.ref == 'refs/heads/main'
+          && env.VERSION != env.LATEST_VERSION
+        with:
+          context: fabric
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          build-args: |
+            FABRIC_VERSION=${{ env.VERSION }}

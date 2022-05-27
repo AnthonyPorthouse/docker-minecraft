@@ -8,9 +8,6 @@ fi
 latest="${LATEST_VERSION:-}"
 version="${VERSION:-}"
 
-IMAGE_NAME=${IMAGE_NAME:-port3m5/purpur}
-IMAGE_NAME=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
-
 build=$(curl -s "https://api.purpurmc.org/v2/purpur/${version}" | jq -r '.builds.latest')
 
 minecraft_version="$version"
