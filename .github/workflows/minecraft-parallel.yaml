@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 6 * * *'
   pull_request:
+    paths:
+      - .github/actions
+      - .github/workflows/minecraft-parallel.yaml
+      - minecraft
   push:
     branches:
       - main
