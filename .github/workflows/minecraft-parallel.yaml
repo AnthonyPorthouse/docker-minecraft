@@ -45,9 +45,12 @@ jobs:
       - name: Get Build Info
         id: build-info
         run: ./minecraft/build/build-version.sh
+
       - name: Build Latest
         uses: docker/build-push-action@v3
-        if: steps.build-info.outputs.minecraft_version == env.LATEST_VERSION
+        if: |
+          steps.build-info.outputs.minecraft_version == env.LATEST_VERSION
+          && steps.build-info.outputs.server_url != null
         with:
           context: minecraft
           tags: |
@@ -57,9 +60,12 @@ jobs:
             MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
             SERVER_URL=${{ steps.build-info.outputs.server_url }}
             JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
+
       - name: Build
         uses: docker/build-push-action@v3
-        if: steps.build-info.outputs.minecraft_version != env.LATEST_VERSION
+        if: |
+          steps.build-info.outputs.minecraft_version != env.LATEST_VERSION
+          && steps.build-info.outputs.server_url != null
         with:
           context: minecraft
           tags: |
@@ -68,9 +74,13 @@ jobs:
             MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
             SERVER_URL=${{ steps.build-info.outputs.server_url }}
             JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
+
       - name: Push Latest
         uses: docker/build-push-action@v3
-        if: github.ref == 'refs/heads/main' && steps.build-info.outputs.minecraft_version == env.LATEST_VERSION
+        if: |
+          github.ref == 'refs/heads/main'
+          && steps.build-info.outputs.minecraft_version == env.LATEST_VERSION
+          && steps.build-info.outputs.server_url != null
         with:
           context: minecraft
           push: true
@@ -81,9 +91,13 @@ jobs:
             MINECRAFT_VERSION=${{ steps.build-info.outputs.minecraft_version }}
             SERVER_URL=${{ steps.build-info.outputs.server_url }}
             JAVA_IMAGE=eclipse-temurin:${{ steps.build-info.outputs.java_version }}-alpine
+
       - name: Push
         uses: docker/build-push-action@v3
-        if: github.ref == 'refs/heads/main' && steps.build-info.outputs.minecraft_version != env.LATEST_VERSION
+        if: |
+          github.ref == 'refs/heads/main'
+          && steps.build-info.outputs.minecraft_version != env.LATEST_VERSION
+          && steps.build-info.outputs.server_url != null
         with:
           context: minecraft
           push: true
@@ -130,9 +144,12 @@ jobs:
       - name: Get Snapshot Build Info
         id: snapshot-build-info
         run: ./minecraft/build/build-snapshot.sh
+
       - name: Build Latest
         uses: docker/build-push-action@v3
-        if: steps.snapshot-build-info.outputs.minecraft_version == env.LATEST_VERSION
+        if: |
+          steps.snapshot-build-info.outputs.minecraft_version == env.LATEST_VERSION
+          && steps.snapshot-build-info.outputs.server_url != null
         with:
           context: minecraft
           tags: |
@@ -142,9 +159,12 @@ jobs:
             MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
             SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
             JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
+
       - name: Build
         uses: docker/build-push-action@v3
-        if: steps.snapshot-build-info.outputs.minecraft_version != env.LATEST_VERSION
+        if: |
+          steps.snapshot-build-info.outputs.minecraft_version != env.LATEST_VERSION
+          && steps.snapshot-build-info.outputs.server_url != null
         with:
           context: minecraft
           tags: |
@@ -153,9 +173,13 @@ jobs:
             MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
             SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
             JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
+
       - name: Push Latest
         uses: docker/build-push-action@v3
-        if: github.ref == 'refs/heads/main' && steps.snapshot-build-info.outputs.minecraft_version == env.LATEST_VERSION
+        if: |
+          github.ref == 'refs/heads/main'
+          && steps.snapshot-build-info.outputs.minecraft_version == env.LATEST_VERSION
+          && steps.snapshot-build-info.outputs.server_url != null
         with:
           context: minecraft
           push: true
@@ -166,9 +190,13 @@ jobs:
             MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
             SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
             JAVA_IMAGE=eclipse-temurin:${{ steps.snapshot-build-info.outputs.java_version }}-alpine
+
       - name: Push
         uses: docker/build-push-action@v3
-        if: github.ref == 'refs/heads/main' && steps.snapshot-build-info.outputs.minecraft_version != env.LATEST_VERSION
+        if: |
+          github.ref == 'refs/heads/main'
+          && steps.snapshot-build-info.outputs.minecraft_version != env.LATEST_VERSION
+          && steps.snapshot-build-info.outputs.server_url != null
         with:
           context: minecraft
           push: true
