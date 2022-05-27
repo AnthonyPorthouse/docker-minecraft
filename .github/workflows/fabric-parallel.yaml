@@ -73,7 +73,7 @@ jobs:
       - name: Build
         uses: docker/build-push-action@v3
         if: |
-          env.VERSION == env.LATEST_VERSION
+          env.VERSION != env.LATEST_VERSION
         with:
           context: fabric
           tags: |
