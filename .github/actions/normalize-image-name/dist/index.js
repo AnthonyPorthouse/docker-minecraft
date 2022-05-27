@@ -8865,7 +8865,7 @@ const github = __nccwpck_require__(5438)
 
 try {
     const imageName = core.getInput('image-name');
-    core.setOutput('image-name', imageName.toLowerCase);
+    core.setOutput('image-name', imageName.toLowerCase());
 } catch (error) {
     core.setFailed(error.message);
 }
