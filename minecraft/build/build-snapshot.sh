@@ -28,7 +28,9 @@ if [ "$server_url" == "null" ]; then
     exit 0
 fi
 
-set -x
+echo "::set-output name=minecraft_version::$minecraft_version"
+echo "::set-output name=server_url::$server_url"
+echo "::set-output name=java_version::$java_version"
 
 docker build \
     --build-arg MINECRAFT_VERSION="$minecraft_version" \

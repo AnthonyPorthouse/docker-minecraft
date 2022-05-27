@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 6 * * *'
+  pull_request:
 
 env:
   REGISTRY: ghcr.io
@@ -70,10 +71,58 @@ jobs:
       VERSION: ${{ toJSON(matrix.version) }}
     steps:
       - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-actions@v2
       - uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build
+      - name: Get Snapshot Build Info
+        id: snapshot-build-info
         run: ./minecraft/build/build-snapshot.sh
+      - name: Build Latest
+        if: steps.snapshot-build-info.outputs.minecraft_version == env.LATEST_VERSION
+        uses: docker/build-push-action@v3
+        with:
+          context: minecraft
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest-snapshot
+            ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
+          build-args: |
+            MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
+            SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
+            JAVA_IMAGE=${{ steps.snapshot-build-info.outputs.java_version }}
+      - name: Build
+        if: steps.snapshot-build-info.outputs.minecraft_version != env.LATEST_VERSION
+        uses: docker/build-push-action@v3
+        with:
+          context: minecraft
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
+          build-args: |
+            MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
+            SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
+            JAVA_IMAGE=${{ steps.snapshot-build-info.outputs.java_version }}
+      - name: Push
+        if: github.ref == 'refs/heads/main' && steps.snapshot-build-info.outputs.minecraft_version == env.LATEST_VERSION
+        with:
+          context: minecraft
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest-snapshot
+            ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
+          build-args: |
+            MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
+            SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
+            JAVA_IMAGE=${{ steps.snapshot-build-info.outputs.java_version }}
+      - name: Push
+        if: github.ref == 'refs/heads/main' && steps.snapshot-build-info.outputs.minecraft_version != env.LATEST_VERSION
+        with:
+          context: minecraft
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.snapshot-build-info.outputs.minecraft_version }}
+          build-args: |
+            MINECRAFT_VERSION=${{ steps.snapshot-build-info.outputs.minecraft_version }}
+            SERVER_URL=${{ steps.snapshot-build-info.outputs.server_url }}
+            JAVA_IMAGE=${{ steps.snapshot-build-info.outputs.java_version }}
