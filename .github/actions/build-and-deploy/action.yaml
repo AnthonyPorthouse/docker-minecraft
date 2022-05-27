@@ -1,0 +1,92 @@
+name: Build and Deploy
+description: Build and deploy images in a context
+inputs:
+  docker-registry:
+    description: The docker registry to log into
+    required: false
+    default: ghcr.io
+  docker-username:
+    description: The username to log into the docker registry as
+    required: false
+    default: ${{ github.actor }}
+  docker-password:
+    description: The password to log into the docker registry with
+    required: true
+  context:
+    description: The build context
+    required: true
+  image-name:
+    description: The base image tag
+    required: true
+  build-args:
+    description: The list of build-args to pass to the build
+    required: true
+  version:
+    description: The current version we're building
+    required: true
+  latest-version:
+    description: The most recent version number
+    required: true
+  latest-tag:
+    description: The tag to use if the current version is the latest version
+    required: false
+    default: latest
+  push:
+    description: Should we push the image
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - uses: docker/setup-buildx-action@v2
+    - uses: docker/login-action@v2
+      with:
+        registry: ${{ inputs.docker-registry }}
+        username: ${{ inputs.docker-username }}
+        password: ${{ inputs.docker-password }}
+
+    - name: Build Latest
+      uses: docker/build-push-action@v3
+      if: |
+        inputs.version == inputs.latest-version
+      with:
+        context: minecraft
+        tags: |
+          ${{ inputs.image-name }}:latest
+          ${{ inputs.image-name }}:${{ inputs.version }}
+        build-args: ${{ inputs.build-args }}
+
+    - name: Build
+      uses: docker/build-push-action@v3
+      if: |
+        inputs.version != inputs.latest-version
+      with:
+        context: minecraft
+        tags: |
+          ${{ inputs.image-name }}:${{ inputs.version }}
+        build-args: ${{ inputs.build-args }}
+
+    - name: Push Latest
+      uses: docker/build-push-action@v3
+      if: |
+        inputs.push == true
+        && inputs.version == inputs.latest-version
+      with:
+        context: minecraft
+        push: true
+        tags: |
+          ${{ inputs.image-name }}:latest
+          ${{ inputs.image-name }}:${{ inputs.version }}
+        build-args: ${{ inputs.build-args }}
+    - name: Push
+      uses: docker/build-push-action@v3
+      if: |
+        inputs.push == true
+        && inputs.version != inputs.latest-version
+      with:
+        context: minecraft
+        push: true
+        tags: |
+          ${{ inputs.image-name }}:${{ inputs.version }}
+        build-args: ${{ inputs.build-args }}
