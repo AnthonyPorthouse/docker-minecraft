@@ -54,10 +54,6 @@ jobs:
       - name: Update Image Name
         run: echo "IMAGE_NAME=${{ steps.normalize-image-name.outputs.image-name }}" >> "$GITHUB_ENV"
 
-      - name: Get Build Info
-        id: build-info
-        run: ./fabric/build/build-version.sh
-
       - name: Build Latest
         uses: docker/build-push-action@v3
         if: |
