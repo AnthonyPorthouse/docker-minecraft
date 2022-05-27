@@ -45,7 +45,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: .github/actions/normalize-image-name
+      - uses: ./.github/actions/normalize-image-name
         id: normalize-image-name
         with:
           image-name: ${{ env.IMAGE_NAME }}
