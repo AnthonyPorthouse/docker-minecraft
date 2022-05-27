@@ -178,6 +178,7 @@ jobs:
         uses: ./.github/actions/build-and-deploy
         if: steps.snapshot-build-info.outputs.server_url != null
         with:
+          docker-password: ${{ secrets.GITHUB_TOKEN }}
           context: minecraft
           image-name: ${{ env.IMAGE_NAME }}
           version: steps.snapshot-build-info.outputs.minecraft_version
