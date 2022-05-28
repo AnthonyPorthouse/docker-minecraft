@@ -59,7 +59,6 @@ jobs:
 
       - name: Build Latest
         uses: ./.github/actions/build-and-deploy
-        if: steps.build-info.outputs.server_url != null
         with:
           docker-password: ${{ secrets.GITHUB_TOKEN }}
           context: paper
