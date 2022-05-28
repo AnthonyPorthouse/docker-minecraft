@@ -45,7 +45,7 @@ runs:
   steps:
     - id: tags
       run: |
-        if [[ "${{ inputs.tags }}" != ""]]; then
+        if [[ "${{ inputs.tags }}" != "" ]]; then
           echo "::set-output name=tags::${{ inputs.tags }}"
         else
           echo "::set-output name=tags::${{ inputs.image-name }}:${{ inputs.version }}"
