@@ -5,7 +5,6 @@ if ! command -v jq >/dev/null 2>&1; then
     exit 1
 fi
 
-latest="${LATEST_VERSION:-}"
 version="${VERSION:-}"
 
 build=$(curl -s "https://papermc.io/api/v2/projects/paper/version_group/${version}/builds" | jq .builds[-1])
@@ -13,19 +12,6 @@ build=$(curl -s "https://papermc.io/api/v2/projects/paper/version_group/${versio
 minecraft_version=$(jq -r '.version' <<< "$build")
 build_id=$(jq -r '.build' <<< "$build")
 
-echo "Building Paper $minecraft_version build $build_id"
-
-docker build \
-    --build-arg MINECRAFT_VERSION="$minecraft_version" \
-    --build-arg=BUILD_NUMBER="$build_id" \
-    -t "$IMAGE_NAME" \
-    -t "$IMAGE_NAME:${minecraft_version}" \
-    -t "$IMAGE_NAME:${minecraft_version}-${build_id}" \
-    paper
-
-docker push "$IMAGE_NAME:${minecraft_version}"
-docker push "$IMAGE_NAME:${minecraft_version}-${build_id}"
-
-if [ "$version" == "$latest" ]; then
-    docker push "$IMAGE_NAME"
-fi
+echo "::set-output name=minecraft-version::${minecraft_version}"
+echo "::set-output name=build-id::${build_id}"
+echo "::set-output name=version::${minecraft_version}-${build_id}"
