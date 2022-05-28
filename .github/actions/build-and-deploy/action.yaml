@@ -51,7 +51,7 @@ runs:
       if: |
         inputs.version == inputs.latest-version
       with:
-        context: minecraft
+        context: ${{ inputs.context }}
         tags: |
           ${{ inputs.image-name }}:latest
           ${{ inputs.image-name }}:${{ inputs.version }}
@@ -62,7 +62,7 @@ runs:
       if: |
         inputs.version != inputs.latest-version
       with:
-        context: minecraft
+        context: ${{ inputs.context }}
         tags: |
           ${{ inputs.image-name }}:${{ inputs.version }}
         build-args: ${{ inputs.build-args }}
@@ -73,7 +73,7 @@ runs:
         inputs.push == 'true'
         && inputs.version == inputs.latest-version
       with:
-        context: minecraft
+        context: ${{ inputs.context }}
         push: true
         tags: |
           ${{ inputs.image-name }}:latest
@@ -85,7 +85,7 @@ runs:
         inputs.push == 'true'
         && inputs.version != inputs.latest-version
       with:
-        context: minecraft
+        context: ${{ inputs.context }}
         push: true
         tags: |
           ${{ inputs.image-name }}:${{ inputs.version }}
